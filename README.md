@@ -8,3 +8,5 @@ Install GraphQL yoga
 
 Install Mongoose for MongoDB connections
 ```npm install mongoose```
+
+``npm install apollo-boost react-apollo graphql-tag graphql --save``
