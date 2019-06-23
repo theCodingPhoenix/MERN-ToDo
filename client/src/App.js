@@ -1,23 +1,26 @@
-import React from 'react';
+import React, {Component} from 'react';
+import gql from "graphql-tag";
+import {graphql} from "react-apollo";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+// build the query just as is done through the playground
+// use the gql tag to parse the query string
+const TodosQuery = gql`
+{
+  todoList{
+      id
+      text
+      complete
+    }
+}`;
+
+class App extends Component{
+  render(){
+  const {data: {loading, todoList}} = this.props;
+
+  if(loading){
+    return null;
+  }
+    return <div>{todoList.map(todo => <div key={`${todo.id}-todo-item`}>{todo.text}</div>)}</div>
+  }
 }
-
-export default App;
+export default graphql(TodosQuery)(App);
