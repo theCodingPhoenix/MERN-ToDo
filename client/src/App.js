@@ -45,7 +45,8 @@ class App extends Component{
       update: store => {
         // Read the data from our cache for this query.
         const data = store.readQuery({ query: TodosQuery });
-        // Add our comment from the mutation to the end.
+        // map the id of the updated todo to the ones in our list
+        // if the id matches update the completed status
         data.todoList = data.todoList.map(
             x => 
               x.id === todo.id ? 
