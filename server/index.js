@@ -2,8 +2,8 @@ const { GraphQLServer } = require('graphql-yoga');
 const mongoose = require("mongoose");
 
 // this runs the background
-mongoose.connect("mongodb://localhost/test");
-const ToDo = mongoose.model("ToDo", {
+mongoose.connect("mongodb://localhost/test1");
+const ToDoList = mongoose.model("ToDoList", {
     text: String,
     complete: Boolean
 });
@@ -11,15 +11,15 @@ const ToDo = mongoose.model("ToDo", {
 const typeDefs = `
   type Query {
     hello(name: String): String!
-    todos: [ToDo]
+    todoList: [ToDoList]
   }
-  type ToDo{
+  type ToDoList{
       id: ID!
       text: String!
       complete: Boolean!
   }
   type Mutation {
-      createToDo(text: String!): ToDo
+      createToDo(text: String!): ToDoList
       updateToDo(id: ID!, complete: Boolean!): Boolean
       deleteToDo(id: ID!): Boolean
   }
@@ -28,20 +28,20 @@ const typeDefs = `
 const resolvers = {
   Query: {
     hello: (_, { name }) => `Hello ${name || 'World'}`,
-    todos: () => ToDo.find()
+    todoList: () => ToDoList.find()
   },
   Mutation: {
       createToDo: async (_, {text}) => {
-          const todo = new ToDo({text, complete: false});
+          const todo = new ToDoList({text, complete: false});
           await todo.save();
           return todo;
       },
       updateToDo: async(_, {id, complete}) =>{
-          await ToDo.findByIdAndUpdate(id, {complete});
+          await ToDoList.findByIdAndUpdate(id, {complete});
           return true;
       },
       deleteToDo: async(_, {id}) => {
-          await ToDo.findByIdAndDelete(id);
+          await ToDoList.findByIdAndDelete(id);
           return true;
       }
   }
