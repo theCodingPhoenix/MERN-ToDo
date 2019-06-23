@@ -11,6 +11,10 @@ Install Mongoose for MongoDB connections
 
 ``npm install apollo-boost react-apollo graphql-tag graphql --save``
 
+Install Material UI framework for nicer UI for the app
+```npm install @material-ui/core```
+
+
 ## Using GraphQL Playground
 
 ###### Mutation
