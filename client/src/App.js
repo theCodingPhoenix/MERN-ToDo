@@ -9,6 +9,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
+import Form from './Form';
 
 // build the query just as is done through the playground
 // use the gql tag to parse the query string
@@ -31,6 +32,16 @@ const DeleteMutation = gql`
   mutation($id: ID!){
     deleteToDo(id: $id)
   }
+`;
+
+const CreateItemMutation = gql`
+mutation($text: String!){
+  createToDo(text: $text){
+    id
+    text
+    complete
+  }
+}
 `;
 
 class App extends Component{
@@ -80,8 +91,26 @@ class App extends Component{
         store.writeQuery({ query: TodosQuery, data });
       }
     });
-    // update the todo
   };
+
+  createToDo = async text => {
+
+    await this.props.createToDo({
+      variables: {
+        text
+      },
+      update: (store, {data: {createToDo}})   => {
+        // Read the data from our cache for this query.
+        const data = store.readQuery({ query: TodosQuery });
+        // map the id of the updated todo to the ones in our list
+        // if the id matches update the completed status
+        data.todoList.push(createToDo);
+        // Write our data back to the cache.
+        store.writeQuery({ query: TodosQuery, data });
+      }
+    });
+  };
+
 
   render() {
     const {
@@ -96,6 +125,7 @@ class App extends Component{
       <div style={{display: "flex"}}>
         <div style={{margin: "auto", width: 750 }}>
           <Paper elevation={1}>
+            <Form submit={this.createToDo}/>
             <List>
               {todoList.map(todo => (
                 <ListItem
@@ -126,6 +156,7 @@ class App extends Component{
 }
 
 export default compose(
+  graphql(CreateItemMutation, {name: "createToDo"}),
   graphql(DeleteMutation, {name: "deleteToDo"}),
   graphql(UpdateMutation, {name: "updateToDo"}), 
   graphql(TodosQuery))(App);
