@@ -29,7 +29,7 @@ const UpdateMutation = gql`
 
 const DeleteMutation = gql`
   mutation($id: ID!){
-    deleteTodo(id: $id)
+    deleteToDo(id: $id)
   }
 `;
 
@@ -64,9 +64,23 @@ class App extends Component{
     // update the todo
   };
 
-  removeToDo = todo => {
+  deleteToDo = async todo => {
 
-    // remove the todo
+    await this.props.deleteToDo({
+      variables: {
+        id: todo.id
+      },
+      update: store => {
+        // Read the data from our cache for this query.
+        const data = store.readQuery({ query: TodosQuery });
+        // map the id of the updated todo to the ones in our list
+        // if the id matches update the completed status
+        data.todoList = data.todoList.filter(x => x.id !== todo.id )
+        // Write our data back to the cache.
+        store.writeQuery({ query: TodosQuery, data });
+      }
+    });
+    // update the todo
   };
 
   render() {
@@ -98,7 +112,7 @@ class App extends Component{
                   />
                 <ListItemText primary={todo.text}/>
                 <ListItemSecondaryAction>
-                  <IconButton onClick={() => this.removeToDo(todo)}>
+                  <IconButton onClick={() => this.deleteToDo(todo)}>
                   </IconButton>
                 </ListItemSecondaryAction>
                 </ListItem>
@@ -111,4 +125,7 @@ class App extends Component{
   }  
 }
 
-export default compose(graphql(UpdateMutation, {name: "updateToDo"}), graphql(TodosQuery))(App);
+export default compose(
+  graphql(DeleteMutation, {name: "deleteToDo"}),
+  graphql(UpdateMutation, {name: "updateToDo"}), 
+  graphql(TodosQuery))(App);
